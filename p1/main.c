@@ -1,8 +1,7 @@
-
-
 #include <stdio.h>
 
 char fromidx(int idx);
+int toidx(char c);
 
 int main(void)
 {
@@ -12,26 +11,18 @@ int main(void)
 	int count[52] = {0};  /* 0~25: 소문자, 26~51: 대문자 */
 	int *cp = nullptr;
 	int max = -1, maxIdx = -1;
-	int firstIdx[52] = {0};
-	int *fp = nullptr;
 
-	for(p=c, cp=count, fp=firstIdx; p<c+N; p++) {
+	cp = count;
+
+	for(p=c; p<c+N; p++) {
 		scanf("%c", p);
-		if(*p >= 'a' && *p <= 'z') {
-			(*(cp + *p - 'a'))++;
-			if(!(*(fp + *p - 'a')))
-				(*(fp + *p - 'a')) = p - c + 1;
-		} else if(*p >= 'A' && *p <= 'Z') {
-			(*(cp + ('z' - 'a' + 1) + *p - 'A'))++;
-			if(!(*(fp + ('z' - 'a' + 1) + *p - 'A')))
-				(*(fp + ('z' - 'a' + 1) + *p - 'A')) = p - c + 1;
-		}
+		(*(cp + toidx(*p)))++;
 	}
 
-	for(cp=count; cp<count+52; cp++)
-		if(*cp > max || (*cp == max && *(fp + maxIdx) - 1 > *(fp + (cp - count)) - 1)) {
-			max = *cp;
-			maxIdx = cp - count;
+	for(p=c; p<c+N; p++)
+		if(*(cp + toidx(*p)) > max) {
+			max = *(cp + toidx(*p));
+			maxIdx = cp + toidx(*p) - count;
 		}
 	
 	printf("%c %d", fromidx(maxIdx), max);
@@ -46,4 +37,13 @@ char fromidx(/* idx */
 		return (char) (idx + 'a');
 	else
 		return (char) (idx - ('z' - 'a' + 1) + 'A');
+}
+
+int toidx(/* c */
+	char c)
+{
+	if(c >= 'a' && c <= 'z')
+		return (int) (c - 'a');
+	else
+		return (int) ('z' - 'a' + 1 + c - 'A');
 }
